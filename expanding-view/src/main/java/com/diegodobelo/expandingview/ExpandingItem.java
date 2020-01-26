@@ -31,6 +31,11 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+
+import com.maltaisn.icondialog.IconHelper;
+
+import java.util.Objects;
+
 import utils.CustomViewUtils;
 
 /**
@@ -41,155 +46,139 @@ public class ExpandingItem extends RelativeLayout {
      * Constant defining default animation duration in milliseconds.
      */
     private static final int DEFAULT_ANIM_DURATION = 300;
-
+    /**
+     * Member variable to hold the icon helper.
+     */
+    private final IconHelper mIconHelper;
     /**
      * Member variable to hold the Item Layout. Set by item_layout in ExpandingItem layout.
      */
     private ViewGroup mItemLayout;
-
     /**
      * The layout inflater.
      */
     private LayoutInflater mInflater;
-
     /**
      * Member variable to hold the base layout. Should not be changed.
      */
     private RelativeLayout mBaseLayout;
-
     /**
      * Member variable to hold item. Should not be changed.
      */
     private LinearLayout mBaseListLayout;
-
     /**
      * Member variable to hold sub items. Should not be changed.
      */
     private LinearLayout mBaseSubListLayout;
-
     /**
      * Member variable to hold the indicator icon.
      * Can be set by {@link #setIndicatorIconRes(int)}} or by {@link #setIndicatorIcon(Drawable)}.
      */
     private ImageView mIndicatorImage;
-
     /**
      * Member variable to hold the expandable part of indicator. Should not be changed.
      */
     private View mIndicatorBackground;
-
-    /**
-     * Stub to hold separator;
-     */
-    private ViewStub mSeparatorStub;
-
     /**
      * Member variable to hold the indicator container. Should not be changed.
      */
     private ViewGroup mIndicatorContainer;
-
     /**
      * Member variable to hold the measured item height.
      */
     private int mItemHeight;
-
     /**
      * Member variable to hold the measured sub item height.
      */
     private int mSubItemHeight;
-
     /**
      * Member variable to hold the measured sub item width.
      */
     private int mSubItemWidth;
-
     /**
      * Member variable to hold the measured total height of sub items.
      */
     private int mCurrentSubItemsHeight;
-
     /**
      * Member variable to hold the sub items count.
      */
     private int mSubItemCount;
-
     /**
      * Member variable to hold the indicator size. Set by indicator_size in ExpandingItem layout.
      */
     private int mIndicatorSize;
-
     /**
      * Member variable to hold the animation duration.
      * Set by animation_duration in ExpandingItem layout in milliseconds.
      * Default is 300ms.
      */
     private int mAnimationDuration;
-
     /**
      * Member variable to hold the indicator margin at left. Set by indicator_margin_left in ExpandingItem layout.
      */
     private int mIndicatorMarginLeft;
-
     /**
      * Member variable to hold the indicator margin at right. Set by indicator_margin_right in ExpandingItem layout.
      */
     private int mIndicatorMarginRight;
-
     /**
      * Member variable to hold the boolean value that defines if the indicator should be shown.
      * Set by show_indicator in ExpandingItem layout.
      */
     private boolean mShowIndicator;
-
     /**
      * Member variable to hold the boolean value that defines if the animation should be shown.
      * Set by show_animation in ExpandingItem layout. Default is true.
      */
     private boolean mShowAnimation;
-
     /**
      * Member variable to hold the boolean value that defines if the sub list will start collapsed or not.
      * Set by start_collapsed in ExpandingItem layout. Default is true.
      */
     private boolean mStartCollapsed;
-
     /**
      * Member variable to hold the state of sub items. true if shown. false otherwise.
      */
     private boolean mSubItemsShown;
-
     /**
      * Member variable to hold the layout resource of sub items. Set by sub_item_layout in ExpandingItem layout.
      */
     private int mSubItemLayoutId;
-
     /**
      * Member variable to hold the layout resource of items. Set by item_layout in ExpandingItem layout.
      */
     private int mItemLayoutId;
-
     /**
      * Member variable to hold the layout resource of separator. Set by separator_layout in ExpandingItem layout.
      */
     private int mSeparatorLayoutId;
-
     /**
      * Holds a reference to the parent. Used to calculate positioning.
      */
     private ExpandingList mParent;
-
     /**
      * Member variable to hold the listener of item state change.
      */
     private OnItemStateChanged mListener;
+    /**
+     * Member variable to hold the ID of current icon.
+     */
+    private int mIconID;
+    /**
+     * Member variable to hold the current indicator color.
+     */
+    private int mIndicatorColor;
 
     /**
      * Constructor.
-     * @param context
-     * @param attrs
+     *
+     * @param context of item
+     * @param attrs   of item
      */
     public ExpandingItem(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        mIconHelper = IconHelper.getInstance(getContext());
 
         readAttributes(context, attrs);
         setupStateVariables();
@@ -223,8 +212,9 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Read all custom styleable attributes.
+     *
      * @param context The custom View Context.
-     * @param attrs The atrributes to be read.
+     * @param attrs   The atrributes to be read.
      */
     private void readAttributes(Context context, AttributeSet attrs) {
         TypedArray array = context.getTheme().obtainStyledAttributes(attrs,
@@ -248,6 +238,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Method to inflate all layouts.
+     *
      * @param context The custom View Context.
      */
     private void inflateLayouts(Context context) {
@@ -258,7 +249,7 @@ public class ExpandingItem extends RelativeLayout {
         mBaseSubListLayout = mBaseLayout.findViewById(R.id.base_sub_list_layout);
         mIndicatorImage = mBaseLayout.findViewById(R.id.indicator_image);
         mBaseLayout.findViewById(R.id.icon_indicator_top).bringToFront();
-        mSeparatorStub = mBaseLayout.findViewById(R.id.base_separator_stub);
+        ViewStub mSeparatorStub = mBaseLayout.findViewById(R.id.base_separator_stub);
         mIndicatorBackground = mBaseLayout.findViewById(R.id.icon_indicator_middle);
         mIndicatorContainer = mBaseLayout.findViewById(R.id.indicator_container);
         mIndicatorContainer.setOnClickListener(new OnClickListener() {
@@ -304,6 +295,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Set a listener to listen item stage changed.
+     *
      * @param listener The listener of type {@link OnItemStateChanged}
      */
     public void setStateChangedListener(OnItemStateChanged listener) {
@@ -312,6 +304,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Tells if the item is expanded.
+     *
      * @return true if expanded. false otherwise.
      */
     public boolean isExpanded() {
@@ -320,6 +313,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Returns the count of sub items.
+     *
      * @return The count of sub items.
      */
     public int getSubItemsCount() {
@@ -384,40 +378,72 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Set the indicator color by resource.
+     *
      * @param colorRes The color resource.
      */
     public void setIndicatorColorRes(int colorRes) {
         setIndicatorColor(ContextCompat.getColor(getContext(), colorRes));
     }
 
+    public int getIndicatorColor() {
+        return mIndicatorColor;
+    }
+
     /**
      * Set the indicator color by color value.
+     *
      * @param color The color value.
      */
     public void setIndicatorColor(int color) {
         ((GradientDrawable) findViewById(R.id.icon_indicator_top).getBackground().mutate()).setColor(color);
         ((GradientDrawable) findViewById(R.id.icon_indicator_bottom).getBackground().mutate()).setColor(color);
         findViewById(R.id.icon_indicator_middle).setBackgroundColor(color);
+        mIndicatorColor = color;
     }
 
     /**
      * Set the indicator icon by resource.
+     *
      * @param iconRes The icon resource.
      */
     public void setIndicatorIconRes(int iconRes) {
         setIndicatorIcon(ContextCompat.getDrawable(getContext(), iconRes));
+        mIconID = -1;
     }
 
     /**
      * Set the indicator icon.
+     *
      * @param icon Drawable of the indicator icon.
      */
     public void setIndicatorIcon(Drawable icon) {
         mIndicatorImage.setImageDrawable(icon);
+        mIconID = -1;
+    }
+
+    /**
+     * Set the indicator icon by id.
+     *
+     * @param iconID indicator icon id.
+     */
+    public void setIndicatorIconById(int iconID) {
+        Drawable icon = Objects.requireNonNull(mIconHelper.getIcon(iconID)).getDrawable(getContext());
+        setIndicatorIcon(icon);
+        mIconID = iconID;
+    }
+
+    /**
+     * Set the indicator icon by id.
+     *
+     * @return current indicator icon id.
+     */
+    public int getIconID() {
+        return mIconID;
     }
 
     /**
      * Creates a sub item based on sub_item_layout Layout, set as ExpandingItem layout attribute.
+     *
      * @return The inflated sub item view.
      */
     @Nullable
@@ -427,6 +453,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Creates a sub item based on sub_item_layout Layout, set as ExpandingItem layout attribute.
+     *
      * @param position The position to add the new Item. Position should not be greater than the list size.
      *                 If position is -1, the item will be added in the end of the list.
      * @return The inflated sub item view.
@@ -466,6 +493,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Creates as many sub items as requested in {@param count}.
+     *
      * @param count The quantity of sub items.
      */
     public void createSubItems(int count) {
@@ -491,6 +519,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Get a sub item at the given position.
+     *
      * @param position The sub item position. Should be > 0.
      * @return The sub item inflated view at the given position.
      */
@@ -504,6 +533,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Remove sub item at the given position.
+     *
      * @param position The position of the item to be removed.
      */
     public void removeSubItemAt(int position) {
@@ -512,6 +542,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Remove the given view representing the sub item. Should be an existing sub item.
+     *
      * @param view The sub item to be removed.
      */
     public void removeSubItemFromList(View view) {
@@ -529,6 +560,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Remove the given view representing the sub item, with animation. Should be an existing sub item.
+     *
      * @param view The sub item to be removed.
      */
     public void removeSubItem(View view) {
@@ -540,10 +572,13 @@ public class ExpandingItem extends RelativeLayout {
      */
     public void removeAllSubItems() {
         mBaseSubListLayout.removeAllViews();
+        mSubItemCount = 0;
+        mCurrentSubItemsHeight = 0;
     }
 
     /**
      * Set the parent in order to auto scroll.
+     *
      * @param parent The parent of type {@link ExpandingList}
      */
     protected void setParent(ExpandingList parent) {
@@ -553,6 +588,7 @@ public class ExpandingItem extends RelativeLayout {
     /**
      * Method to add the inflated item and set click listener.
      * Also measures the item height.
+     *
      * @param item The inflated item layout.
      */
     private void addItem(final ViewGroup item) {
@@ -575,6 +611,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Measure sub items dimension.
+     *
      * @param v The sub item to measure.
      */
     private void setSubItemDimensions(final ViewGroup v) {
@@ -611,8 +648,9 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Show sub items translation animation.
+     *
      * @param viewGroup The sub item to animate
-     * @param index The sub item index. Needed to calculate delays.
+     * @param index     The sub item index. Needed to calculate delays.
      */
     private void animateSubViews(final ViewGroup viewGroup, int index) {
         if (viewGroup == null) {
@@ -631,7 +669,7 @@ public class ExpandingItem extends RelativeLayout {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float val = (float) animation.getAnimatedValue();
-                viewGroup.setX((mSubItemWidth / 2 * val) - mSubItemWidth / 2);
+                viewGroup.setX((float) ((mSubItemWidth / 2.0 * val) - mSubItemWidth / 2.0));
             }
         });
 
@@ -647,8 +685,9 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Show sub items alpha animation.
+     *
      * @param viewGroup The sub item to animate
-     * @param index The sub item index. Needed to calculate delays.
+     * @param index     The sub item index. Needed to calculate delays.
      */
     private void animateViewAlpha(final ViewGroup viewGroup, int index) {
         if (viewGroup == null) {
@@ -674,6 +713,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Show indicator animation.
+     *
      * @param startingPos The position from where the animation should start. Useful when removing sub items.
      */
     private void expandIconIndicator(float startingPos) {
@@ -699,6 +739,7 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Expand the sub items container with animation
+     *
      * @param startingPos The position from where the animation should start. Useful when removing sub items.
      */
     private void expandSubItemsWithAnimation(float startingPos) {
@@ -734,7 +775,8 @@ public class ExpandingItem extends RelativeLayout {
 
     /**
      * Remove the given sub item after animation ends.
-     * @param subItem The view representing the sub item to be removed.
+     *
+     * @param subItem  The view representing the sub item to be removed.
      * @param isAdding true if adding a view. false otherwise.
      */
     private void animateSubItemAppearance(final View subItem, boolean isAdding) {
@@ -783,6 +825,7 @@ public class ExpandingItem extends RelativeLayout {
     public interface OnItemStateChanged {
         /**
          * Notify if item was expanded or collapsed.
+         *
          * @param expanded true if expanded. false otherwise.
          */
         void itemCollapseStateChanged(boolean expanded);

@@ -27,12 +27,13 @@ public class ExpandingList extends ScrollView {
     /**
      * Member variable to hold the items.
      */
-    private LinearLayout mContainer;
+    private final LinearLayout mContainer;
 
     /**
      * The constructor.
+     *
      * @param context The View Context.
-     * @param attrs The attributes.
+     * @param attrs   The attributes.
      */
     public ExpandingList(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -43,6 +44,7 @@ public class ExpandingList extends ScrollView {
 
     /**
      * Method to add a new item.
+     *
      * @param item The ExpandingItem item.
      */
     private void addItem(ExpandingItem item) {
@@ -51,6 +53,7 @@ public class ExpandingList extends ScrollView {
 
     /**
      * Method to create and add a new item.
+     *
      * @param layoutId The item Layout.
      * @return The created item.
      */
@@ -68,6 +71,7 @@ public class ExpandingList extends ScrollView {
 
     /**
      * Method to get an Item from the ExpandingList by its index.
+     *
      * @param index The index of the item.
      * @return An ExpandingItem in the list.
      */
@@ -79,7 +83,18 @@ public class ExpandingList extends ScrollView {
     }
 
     /**
+     * Method to get an Item from the ExpandingList by its index.
+     *
+     * @param item in the list.
+     * @return The index of the item.
+     */
+    public int getIndexByItem(ExpandingItem item) {
+        return mContainer.indexOfChild(item);
+    }
+
+    /**
      * Return the items count.
+     *
      * @return Items count.
      */
     public int getItemsCount() {
@@ -88,6 +103,7 @@ public class ExpandingList extends ScrollView {
 
     /**
      * Method to remove an item.
+     *
      * @param item The item to be removed.
      */
     public void removeItem(final ExpandingItem item) {
@@ -104,6 +120,7 @@ public class ExpandingList extends ScrollView {
 
     /**
      * Scroll up to show sub items
+     *
      * @param delta The calculated amount to scroll up.
      */
     protected void scrollUpByDelta(final int delta) {
