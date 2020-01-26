@@ -17,6 +17,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
@@ -168,6 +170,10 @@ public class ExpandingItem extends RelativeLayout {
      * Member variable to hold the current indicator color.
      */
     private int mIndicatorColor;
+    /**
+     * Member variable to hold the current indicator color.
+     */
+    private int mIndicatorIconColor;
 
     /**
      * Constructor.
@@ -385,6 +391,11 @@ public class ExpandingItem extends RelativeLayout {
         setIndicatorColor(ContextCompat.getColor(getContext(), colorRes));
     }
 
+    /**
+     * Get the indicator color.
+     *
+     * @return Indicator color.
+     */
     public int getIndicatorColor() {
         return mIndicatorColor;
     }
@@ -426,14 +437,25 @@ public class ExpandingItem extends RelativeLayout {
      *
      * @param iconID indicator icon id.
      */
-    public void setIndicatorIconById(int iconID) {
+    public void setIndicatorIconById(int iconID, int color) {
         Drawable icon = Objects.requireNonNull(mIconHelper.getIcon(iconID)).getDrawable(getContext());
+        icon.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));
         setIndicatorIcon(icon);
         mIconID = iconID;
+        mIndicatorIconColor = color;
     }
 
     /**
-     * Set the indicator icon by id.
+     * Get the indicator icon color.
+     *
+     * @return current indicator icon color.
+     */
+    public int getIndicatorIconColor() {
+        return mIndicatorIconColor;
+    }
+
+    /**
+     * Get the indicator.
      *
      * @return current indicator icon id.
      */
