@@ -510,6 +510,18 @@ public class ExpandingItem extends RelativeLayout {
             adjustItemPosIfHidden();
         }
 
+        if (mStartCollapsed) {
+            collapse();
+        } else {
+            mSubItemsShown = true;
+            mBaseSubListLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    expandIconIndicator(0f);
+                }
+            });
+        }
+
         return subItemLayout;
     }
 
@@ -525,17 +537,6 @@ public class ExpandingItem extends RelativeLayout {
         }
         for (int i = 0; i < count; i++) {
             createSubItem();
-        }
-        if (mStartCollapsed) {
-            collapse();
-        } else {
-            mSubItemsShown = true;
-            mBaseSubListLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    expandIconIndicator(0f);
-                }
-            });
         }
     }
 
