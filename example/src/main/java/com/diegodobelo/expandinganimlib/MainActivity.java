@@ -18,11 +18,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.diegodobelo.expandingview.ExpandingItem;
-import com.diegodobelo.expandingview.ExpandingList;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.diegodobelo.expandingview.ExpandingItem;
+import com.diegodobelo.expandingview.ExpandingList;
 
 public class MainActivity extends AppCompatActivity {
     private ExpandingList mExpandingList;
